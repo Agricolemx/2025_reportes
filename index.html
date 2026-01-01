@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="referrer" content="no-referrer">
+    
+    <link rel="icon" type="image/png" href="agricole.png">
+    
+    <title>Agricole | Master View 2025</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-body: #F5F5F7;
+            --text-primary: #1D1D1F;
+            --text-secondary: #86868B;
+            --accent: #0071E3;
+            --border: #E5E5EA;
+            --shadow: 0 8px 30px rgba(0,0,0,0.08);
+            --sidebar-width: 260px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- LOGIN SCREEN --- */
+        #login-overlay {
+            position: fixed; inset: 0; background: rgba(245, 245, 247, 1);
+            z-index: 9999; display: flex; justify-content: center; align-items: center;
+            transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        .login-exit { opacity: 0; transform: scale(1.1) translateY(-10px); filter: blur(10px); pointer-events: none; }
+
+        .login-card {
+            background: #FFFFFF; width: 380px; padding: 40px; border-radius: 24px;
+            box-shadow: var(--shadow); text-align: center;
+            border: 1px solid rgba(0,0,0,0.02); transition: transform 0.2s;
+        }
+        .login-logo { font-size: 26px; font-weight: 700; margin-bottom: 6px; letter-spacing: -0.5px; }
+        .login-sub { font-size: 13px; color: #86868B; margin-bottom: 35px; }
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .input-label { display: block; font-size: 11px; font-weight: 600; color: #86868B; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .input-wrapper { position: relative; }
+        .login-input {
+            width: 100%; padding: 14px 16px; border: 1px solid #D1D1D6; border-radius: 12px;
+            font-size: 15px; background: #FFF; transition: all 0.2s; color: #1D1D1F;
+        }
+        .login-input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(0,113,227,0.15); }
+        .toggle-password { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: #86868B; cursor: pointer; font-size: 16px; transition: color 0.2s; }
+        .toggle-password:hover { color: var(--accent); }
+
+        .login-btn {
+            width: 100%; padding: 14px; background: #1D1D1F; color: #FFF; border: none;
+            border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer;
+            margin-top: 10px; transition: all 0.3s; position: relative; overflow: hidden;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .login-btn:hover { background: #000; transform: scale(1.02); }
+        .login-btn:active { transform: scale(0.98); }
+
+        .btn-text { transition: opacity 0.2s; }
+        .btn-loader {
+            position: absolute; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #FFF; border-radius: 50%; animation: spin 0.8s linear infinite;
+            opacity: 0; visibility: hidden;
+        }
+        .loading .btn-text { opacity: 0; }
+        .loading .btn-loader { opacity: 1; visibility: visible; }
+        .error-msg { color: #FF3B30; font-size: 13px; margin-top: 20px; min-height: 20px; font-weight: 500; opacity: 0; transform: translateY(5px); transition: all 0.3s; }
+        .error-visible { opacity: 1; transform: translateY(0); }
+
+        /* --- DASHBOARD --- */
+        #dashboard-container {
+            display: flex; width: 100%; height: 100%; opacity: 0; transform: scale(0.96);
+            transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1); pointer-events: none;
+        }
+        .dashboard-active { opacity: 1 !important; transform: scale(1) !important; pointer-events: all !important; }
+
+        .sidebar {
+            width: var(--sidebar-width); background: #FFF; border-right: 1px solid var(--border);
+            display: flex; flex-direction: column; padding: 30px 20px; z-index: 20;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .sidebar-header h2 { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
+        .sidebar-header span { font-size: 12px; color: var(--text-secondary); }
+
+        .menu-list { list-style: none; margin-top: 40px; display: flex; flex-direction: column; gap: 6px; }
+        .menu-item {
+            padding: 12px 14px; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 500;
+            color: var(--text-primary); transition: all 0.2s; display: flex; align-items: center; gap: 12px;
+        }
+        .menu-item:hover { background-color: #F5F5F7; }
+        .menu-item.active { background-color: var(--accent); color: #FFF; box-shadow: 0 4px 12px rgba(0, 113, 227, 0.25); }
+        .menu-item.active i { color: #FFF; }
+        .menu-item i { width: 18px; text-align: center; color: var(--text-secondary); transition: color 0.2s; }
+
+        .bottom-actions { margin-top: auto; display: flex; flex-direction: column; gap: 10px; padding-top: 20px; border-top: 1px solid #F5F5F7; }
+        
+        .action-btn {
+            width: 100%; padding: 12px; border: none; border-radius: 10px; font-size: 13px; font-weight: 600;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;
+        }
+        .date-selector-btn { background: #F5F5F7; color: #1D1D1F; }
+        .date-selector-btn:hover { background: #E5E5EA; }
+        .logout-btn { background: #FFF0F0; color: #FF3B30; }
+        .logout-btn:hover { background: #FFE5E5; }
+
+        .main-content { flex: 1; display: flex; flex-direction: column; background: var(--bg-body); width: 100%; }
+        .top-bar {
+            height: 60px; display: flex; justify-content: space-between; align-items: center;
+            padding: 0 20px; background: #FFF; border-bottom: 1px solid rgba(0,0,0,0.04); z-index: 15;
+        }
+        .menu-toggle-btn { display: none; font-size: 18px; color: var(--text-primary); cursor: pointer; padding: 10px; margin-left: -10px; }
+        .view-title { font-size: 18px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.5px; }
+        .current-period-badge { font-size: 12px; background: #F5F5F7; padding: 4px 10px; border-radius: 12px; color: #86868B; font-weight: 500; margin-left: 10px; }
+
+        .refresh-btn {
+            background: #FFF; border: 1px solid var(--border); padding: 8px 12px; border-radius: 8px;
+            font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text-primary);
+            display: flex; align-items: center; gap: 6px; transition: all 0.2s;
+        }
+        .refresh-btn:active { background: #F5F5F7; transform: scale(0.96); }
+
+        .frame-container { 
+            flex: 1; padding: 0; position: relative; overflow: hidden; 
+            display: flex; justify-content: center; align-items: flex-start;
+        }
+        
+        .frame-wrapper {
+            width: 100%; height: 100%; background: #FFF; 
+            box-shadow: none; border: none;
+            overflow: hidden; position: relative;
+            transform-origin: top center; transition: transform 0.3s ease;
+        }
+
+        iframe { width: 100%; height: 100%; border: none; display: block; }
+
+        #inner-loader { position: absolute; inset: 0; background: #FFF; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 5; display: none; }
+        .spinner { width: 24px; height: 24px; border: 2.5px solid #E5E5EA; border-top-color: var(--text-primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 10px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* 🔥 HINT: DISEÑO FROSTED GLASS (CRISTAL LECHOSO) 🔥 */
+        .incognito-hint {
+            position: absolute; bottom: 40px; left: 0; right: 0; 
+            display: flex; justify-content: center; pointer-events: none; 
+            opacity: 0; transform: translateY(20px);
+            /* Entrada elástica sutil */
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); 
+            z-index: 20;
+        }
+        .incognito-hint.visible { opacity: 1; transform: translateY(0); pointer-events: all; }
+
+        .hint-content {
+            /* ESTILO CRISTAL APPLE PREMIUM */
+            background: rgba(255, 255, 255, 0.45); /* Más visible */
+            padding: 14px 24px; border-radius: 50px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1), inset 0 0 0 1px rgba(255,255,255,0.4);
+            backdrop-filter: blur(30px) saturate(180%);
+            -webkit-backdrop-filter: blur(30px) saturate(180%);
+            display: flex; align-items: center; gap: 14px;
+            transform-origin: center center;
+        }
+        
+        .hint-text {
+            color: #1D1D1F; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 10px; letter-spacing: -0.2px;
+        }
+        .hint-text i { color: #FF3B30; font-size: 16px; } 
+
+        .close-hint-btn {
+            background: rgba(0,0,0,0.06); border: none; width: 26px; height: 26px; border-radius: 50%;
+            color: #555; display: flex; justify-content: center; align-items: center; font-size: 12px;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .close-hint-btn:hover { background: rgba(0,0,0,0.15); transform: scale(1.1); color: #000; }
+
+        /* 🔥 ANIMACIÓN DE SALIDA: DISPERSIÓN MOLECULAR LENTA 🔥 */
+        @keyframes molecularDissolve {
+            0% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+                filter: blur(0px);
+                letter-spacing: 0px;
+            }
+            100% {
+                opacity: 0;
+                transform: scale(1.1) translateY(-20px); /* Flota hacia arriba */
+                filter: blur(15px); /* Se desenfoca fuertemente */
+                letter-spacing: 10px; /* Las letras se separan (partículas) */
+            }
+        }
+        
+        .incognito-hint.dissolve .hint-content {
+            /* 1.5s de duración para que sea LENTO y ELEGANTE */
+            animation: molecularDissolve 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        /* --- MODAL DE MESES --- */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            z-index: 100; display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: all 0.3s ease;
+        }
+        .modal-overlay.open { opacity: 1; pointer-events: all; }
+        .modal-card {
+            background: #FFF; width: 90%; max-width: 500px; padding: 30px; border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.12); transform: scale(0.95); transition: transform 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+            border: 1px solid rgba(0,0,0,0.05); text-align: center;
+        }
+        .modal-overlay.open .modal-card { transform: scale(1); }
+        .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 5px; }
+        .modal-sub { font-size: 13px; color: #86868B; margin-bottom: 25px; }
+        .months-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .month-btn {
+            padding: 15px 10px; background: #F5F5F7; border: 1px solid transparent; border-radius: 12px;
+            font-size: 13px; font-weight: 600; color: #1D1D1F; cursor: pointer; transition: all 0.2s;
+        }
+        .month-btn:hover:not(.disabled) { background: #E5E5EA; transform: translateY(-2px); }
+        .month-btn.active { background: var(--text-primary); color: #FFF; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .month-btn.disabled { opacity: 0.3; cursor: not-allowed; background: #F9F9F9; color: #CCC; }
+        .close-modal { margin-top: 25px; cursor: pointer; color: #86868B; font-size: 13px; font-weight: 500; }
+        .close-modal:hover { color: var(--text-primary); }
+
+        /* --- MOBILE ROTATION HINT --- */
+        #rotate-hint {
+            position: fixed; inset: 0; background: #FFF; z-index: 10000;
+            display: none; justify-content: center; align-items: center; flex-direction: column;
+            text-align: center; padding: 40px;
+        }
+        .rotate-icon { font-size: 40px; margin-bottom: 20px; color: var(--text-primary); animation: rotate-phone 2s infinite ease-in-out; }
+        @keyframes rotate-phone { 0% { transform: rotate(0deg); } 25% { transform: rotate(90deg); } 50% { transform: rotate(90deg); } 75% { transform: rotate(0deg); } 100% { transform: rotate(0deg); } }
+
+        @media (max-width: 768px) {
+            .sidebar { position: fixed; top: 0; bottom: 0; left: 0; transform: translateX(-100%); width: 85%; max-width: 320px; box-shadow: 10px 0 30px rgba(0,0,0,0.1); }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 18; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+            .sidebar-backdrop.open { opacity: 1; pointer-events: all; }
+            .menu-toggle-btn { display: block; }
+            .months-grid { grid-template-columns: repeat(2, 1fr); }
+            .refresh-btn span { display: none; }
+            .frame-container { padding: 10px; } 
+            .frame-wrapper { border-radius: 16px; border: 1px solid rgba(0,0,0,0.03); box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+            @media (orientation: portrait) { #rotate-hint.show-once { display: flex; } }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="rotate-hint">
+        <i class="fas fa-mobile-alt rotate-icon"></i>
+        <h3 style="font-weight: 600; margin-bottom: 8px;">Mejor experiencia en Horizontal</h3>
+        <p style="color: #86868B; font-size: 13px;">Gira tu dispositivo para ver los gráficos detalladamente.</p>
+    </div>
+
+    <div id="login-overlay">
+        <div class="login-card">
+            <div class="login-logo">AGRICOLE</div>
+            <div class="login-sub">Acceso Analítico · 2025</div>
+            <div class="input-group">
+                <label class="input-label">Usuario</label>
+                <div class="input-wrapper"><input type="text" id="userIn" class="login-input" placeholder="Username" autocomplete="off" autocapitalize="none"></div>
+            </div>
+            <div class="input-group">
+                <label class="input-label">Contraseña</label>
+                <div class="input-wrapper" style="position: relative;">
+                    <input type="password" id="passIn" class="login-input" placeholder="•••••••••">
+                    <i class="fas fa-eye toggle-password" id="eyeIcon" onclick="togglePass()"></i>
+                </div>
+            </div>
+            <button class="login-btn" id="loginBtn" onclick="attemptLogin()">
+                <span class="btn-text">Entrar</span>
+                <div class="btn-loader"></div>
+            </button>
+            <div id="errorMsg" class="error-msg">Credenciales incorrectas</div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="dateModal">
+        <div class="modal-card">
+            <div class="modal-title">Selecciona el Periodo</div>
+            <div class="modal-sub">Año Fiscal 2025</div>
+            <div class="months-grid" id="monthsGrid"></div>
+            <div class="close-modal" onclick="closeDateModal()">Cancelar</div>
+        </div>
+    </div>
+
+    <div id="dashboard-container">
+        <div class="sidebar-backdrop" id="backdrop" onclick="toggleSidebar()"></div>
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div><h2>AGRICOLE</h2><span>Master View</span></div>
+                <div class="menu-toggle-btn" onclick="toggleSidebar()" style="display: none;"><i class="fas fa-times"></i></div>
+            </div>
+
+            <ul class="menu-list">
+                <li class="menu-item active" onclick="changeView('pescadero', this)"><i class="fas fa-fish"></i> Pescadero</li>
+                <li class="menu-item" onclick="changeView('sanjose', this)"><i class="fas fa-leaf"></i> San José</li>
+                <li class="menu-item" onclick="changeView('kiosco', this)"><i class="fas fa-store"></i> Kiosco</li>
+                <li class="menu-item" onclick="changeView('restaurante', this)"><i class="fas fa-utensils"></i> Restaurante</li>
+            </ul>
+
+            <div class="bottom-actions">
+                <button class="action-btn date-selector-btn" onclick="openDateModal()">
+                    <i class="far fa-calendar-alt"></i> <span id="btnDateLabel">Diciembre 2025</span>
+                </button>
+                <button class="action-btn logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div class="menu-toggle-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
+                    <div>
+                        <span class="view-title" id="pageTitle">Pescadero</span>
+                        <span class="current-period-badge" id="headerPeriod">DIC 2025</span>
+                    </div>
+                </div>
+                <button class="refresh-btn" onclick="refreshFrame()">
+                    <i class="fas fa-sync-alt"></i> <span>Actualizar</span>
+                </button>
+            </header>
+
+            <div class="frame-container" id="frameContainer">
+                <div class="frame-wrapper" id="frameWrapper">
+                    <div id="inner-loader"><div class="spinner"></div><p style="font-size:12px; color:#86868B;">Cargando...</p></div>
+                    <iframe id="mainFrame" src="" style="-webkit-overflow-scrolling: touch;"></iframe>
+                    
+                    <div id="incognitoHint" class="incognito-hint">
+                        <div class="hint-content">
+                            <span class="hint-text">
+                                <i class="fas fa-exclamation-triangle"></i> Si no carga, usa Modo Incógnito
+                            </span>
+                            <button class="close-hint-btn" onclick="dissolveHint()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const DB_LINKS = {
+            "2025": {
+                "ENERO": { restaurante: null, pescadero: null, sanjose: null, kiosco: null },
+                "FEBRERO": { restaurante: null, pescadero: null, sanjose: null, kiosco: null },
+                "MARZO": { restaurante: null, pescadero: null, sanjose: null, kiosco: null },
+                "ABRIL": { restaurante: null, pescadero: null, sanjose: null, kiosco: null },
+                "MAYO": { restaurante: null, pescadero: null, sanjose: null, kiosco: null },
+                "JUNIO": { restaurante: null, pescadero: null, sanjose: null, kiosco: null },
+                "JULIO": { restaurante: null, pescadero: null, sanjose: null, kiosco: null },
+                "AGOSTO": { restaurante: null, pescadero: null, sanjose: null, kiosco: null },
+                "SEPTIEMBRE": { restaurante: null, pescadero: null, sanjose: null, kiosco: null },
+                "OCTUBRE": { restaurante: null, pescadero: null, sanjose: null, kiosco: null },
+                "NOVIEMBRE": { restaurante: null, pescadero: null, sanjose: null, kiosco: null },
+                "DICIEMBRE": {
+                    restaurante: 'https://script.google.com/macros/s/AKfycbzsuSbIyzYBxeymhMO0w4r_Mn9-Pm9gnTM7TxyriXMDum0xIuyekmlVwWrIoUWSOheB/exec',
+                    pescadero: 'https://script.google.com/macros/s/AKfycbwcoeQM3DUfh2inkwyJHV7mri8AQeY2BVISAwfqkzdpgohv0Rn7w2YOInDqYzQ0R9XT/exec',
+                    sanjose: 'https://script.google.com/macros/s/AKfycbwsYYwQcVtlRSnWZo7U5b3F8ZmP9y5y4xd2o-O2UV54_0K85hS4Mro-Ixz428wFH6Hz7w/exec',
+                    kiosco: 'https://script.google.com/macros/s/AKfycbzgIb8uhTUwKpNcWLqzYDudsgmmD5tS_BDb8P9HcQ25b2rRVFHI50dbi_a-ToE00y9BaA/exec'
+                }
+            }
+        };
+
+        // INICIO: PESCADERO POR DEFECTO
+        let STATE = {
+            year: "2025",
+            month: "DICIEMBRE", 
+            view: "pescadero" 
+        };
+
+        const UNIT_NAMES = { restaurante: "Restaurante", pescadero: "Pescadero", sanjose: "San José", kiosco: "Kiosco" };
+
+        const HASH_USER = "835d6dc88b708bc646d6db82c853ef4182fabbd4a8de59c213f2b5ab3ae7d9be";
+        const HASH_PASS = "ab1a4e505565a12ce79107f113ad88b80319d0519f1e585f1656a604064aa9af";
+
+        // MEMORIA DE SESIÓN (Se borra si das F5)
+        let hintsShownSession = {
+            restaurante: false,
+            pescadero: false,
+            sanjose: false,
+            kiosco: false
+        };
+
+        async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        window.onload = () => {
+            handleMobileRotation();
+            if (localStorage.getItem('agricole_auth') === 'true') {
+                document.getElementById('login-overlay').style.display = 'none';
+                initDashboard();
+            }
+        };
+
+        function handleMobileRotation() {
+            if(window.innerWidth < 768 && !sessionStorage.getItem('rotateHintShown')) {
+                const hint = document.getElementById('rotate-hint');
+                hint.classList.add('show-once');
+                sessionStorage.setItem('rotateHintShown', 'true');
+                setTimeout(() => {
+                    hint.style.opacity = 0;
+                    setTimeout(() => hint.style.display = 'none', 500);
+                }, 3500);
+            }
+        }
+
+        function togglePass() {
+            const input = document.getElementById('passIn');
+            const icon = document.getElementById('eyeIcon');
+            input.type = input.type === "password" ? "text" : "password";
+            icon.classList.toggle('fa-eye'); icon.classList.toggle('fa-eye-slash');
+        }
+
+        async function attemptLogin() {
+            const btn = document.getElementById('loginBtn');
+            const err = document.getElementById('errorMsg');
+            const userRaw = document.getElementById('userIn').value.trim().toUpperCase(); 
+            const passRaw = document.getElementById('passIn').value; 
+
+            btn.classList.add('loading'); err.classList.remove('error-visible');
+            await new Promise(r => setTimeout(r, 700));
+
+            const uHash = await sha256(userRaw);
+            const pHash = await sha256(passRaw);
+
+            if (uHash === HASH_USER && pHash === HASH_PASS) {
+                localStorage.setItem('agricole_auth', 'true');
+                const overlay = document.getElementById('login-overlay');
+                overlay.classList.add('login-exit'); 
+                setTimeout(() => { overlay.style.display = 'none'; initDashboard(); }, 600); 
+            } else {
+                btn.classList.remove('loading'); err.classList.add('error-visible');
+                const card = document.querySelector('.login-card');
+                card.style.transform = "translateX(6px)";
+                setTimeout(() => card.style.transform = "translateX(-6px)", 50);
+                setTimeout(() => card.style.transform = "translateX(0)", 150);
+            }
+        }
+
+        const iframe = document.getElementById('mainFrame');
+        const loader = document.getElementById('inner-loader');
+        let hintTimer;
+        let hideTimer;
+
+        function initDashboard() {
+            document.getElementById('dashboard-container').classList.add('dashboard-active');
+            updateUI(); 
+            loadIframe(); 
+        }
+
+        function changeView(viewKey, element) {
+            document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+            if(element) element.classList.add('active');
+            if(window.innerWidth <= 768) toggleSidebar();
+            if (STATE.view === viewKey) return;
+            STATE.view = viewKey;
+            updateUI();
+            loadIframe();
+        }
+
+        function loadIframe() {
+            const url = DB_LINKS[STATE.year][STATE.month][STATE.view];
+            
+            // Limpieza total del hint
+            const hint = document.getElementById('incognitoHint');
+            hint.className = 'incognito-hint'; // reset classes (quitar dissolve/visible)
+            clearTimeout(hintTimer);
+            clearTimeout(hideTimer);
+
+            if (url) {
+                loader.style.display = 'flex';
+                iframe.src = url;
+                
+                // LÓGICA: 1 VEZ POR SESIÓN
+                if (!hintsShownSession[STATE.view]) {
+                    hintTimer = setTimeout(() => {
+                        hint.classList.add('visible');
+                        hintsShownSession[STATE.view] = true;
+                        
+                        // AUTO-DISOLVER EN 3 SEGUNDOS
+                        hideTimer = setTimeout(() => {
+                            dissolveHint();
+                        }, 3000); 
+
+                    }, 2000);
+                }
+
+                iframe.onload = () => { 
+                    loader.style.display = 'none'; 
+                };
+            } else {
+                iframe.src = "about:blank";
+                alert("No hay datos disponibles para esta selección.");
+            }
+        }
+
+        // Nueva función para desvanecer con partículas lentas
+        function dissolveHint() {
+            const hint = document.getElementById('incognitoHint');
+            hint.classList.add('dissolve');
+            // Eliminar visibilidad real después de la animación (1.5s)
+            setTimeout(() => {
+                hint.classList.remove('visible');
+                hint.classList.remove('dissolve');
+            }, 1500);
+            clearTimeout(hideTimer);
+        }
+
+        function updateUI() {
+            const prettyMonth = STATE.month.charAt(0).toUpperCase() + STATE.month.slice(1).toLowerCase();
+            const prettyView = UNIT_NAMES[STATE.view];
+            
+            document.getElementById('pageTitle').innerText = prettyView;
+            document.getElementById('headerPeriod').innerText = `${STATE.month.substring(0,3)} ${STATE.year}`;
+            document.getElementById('btnDateLabel').innerText = `${prettyMonth} ${STATE.year}`;
+        }
+
+        function refreshFrame() {
+            loadIframe(); 
+        }
+
+        function logout() {
+            localStorage.removeItem('agricole_auth');
+            location.reload();
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('backdrop').classList.toggle('open');
+        }
+
+        function openDateModal() {
+            const modal = document.getElementById('dateModal');
+            const grid = document.getElementById('monthsGrid');
+            grid.innerHTML = ''; 
+
+            const months = Object.keys(DB_LINKS["2025"]);
+            
+            months.forEach(m => {
+                const btn = document.createElement('div');
+                btn.className = 'month-btn';
+                btn.innerText = m.substring(0, 3); 
+                
+                const hasLink = DB_LINKS["2025"][m][STATE.view];
+                
+                if (!hasLink) {
+                    btn.classList.add('disabled'); 
+                } else {
+                    btn.onclick = () => selectMonth(m);
+                }
+
+                if (m === STATE.month) btn.classList.add('active'); 
+                grid.appendChild(btn);
+            });
+
+            modal.classList.add('open');
+        }
+
+        function closeDateModal() {
+            document.getElementById('dateModal').classList.remove('open');
+        }
+
+        function selectMonth(month) {
+            STATE.month = month;
+            closeDateModal();
+            updateUI();
+            loadIframe();
+        }
+
+        document.getElementById('passIn').addEventListener('keypress', (e) => { if (e.key === 'Enter') attemptLogin(); });
+
+    </script>
+</body>
+</html>
