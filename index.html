@@ -7,7 +7,7 @@
     
     <link rel="icon" type="image/png" href="agricole.png">
     
-    <title>Agricole | Master View 2025</title>
+    <title>Agricole | Master View 2025-2030</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -149,20 +149,18 @@
         .spinner { width: 24px; height: 24px; border: 2.5px solid #E5E5EA; border-top-color: var(--text-primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 10px; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* 🔥 HINT: DISEÑO FROSTED GLASS (CRISTAL LECHOSO) 🔥 */
+        /* DISEÑO FROSTED GLASS */
         .incognito-hint {
             position: absolute; bottom: 40px; left: 0; right: 0; 
             display: flex; justify-content: center; pointer-events: none; 
             opacity: 0; transform: translateY(20px);
-            /* Entrada elástica sutil */
             transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); 
             z-index: 20;
         }
         .incognito-hint.visible { opacity: 1; transform: translateY(0); pointer-events: all; }
 
         .hint-content {
-            /* ESTILO CRISTAL APPLE PREMIUM */
-            background: rgba(255, 255, 255, 0.45); /* Más visible */
+            background: rgba(255, 255, 255, 0.45);
             padding: 14px 24px; border-radius: 50px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.1), inset 0 0 0 1px rgba(255,255,255,0.4);
             backdrop-filter: blur(30px) saturate(180%);
@@ -183,28 +181,16 @@
         }
         .close-hint-btn:hover { background: rgba(0,0,0,0.15); transform: scale(1.1); color: #000; }
 
-        /* 🔥 ANIMACIÓN DE SALIDA: DISPERSIÓN MOLECULAR LENTA 🔥 */
         @keyframes molecularDissolve {
-            0% {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-                filter: blur(0px);
-                letter-spacing: 0px;
-            }
-            100% {
-                opacity: 0;
-                transform: scale(1.1) translateY(-20px); /* Flota hacia arriba */
-                filter: blur(15px); /* Se desenfoca fuertemente */
-                letter-spacing: 10px; /* Las letras se separan (partículas) */
-            }
+            0% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0px); letter-spacing: 0px; }
+            100% { opacity: 0; transform: scale(1.1) translateY(-20px); filter: blur(15px); letter-spacing: 10px; }
         }
         
         .incognito-hint.dissolve .hint-content {
-            /* 1.5s de duración para que sea LENTO y ELEGANTE */
             animation: molecularDissolve 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
-        /* --- MODAL DE MESES --- */
+        /* --- MODAL DE SELECCIÓN (AÑOS Y MESES) --- */
         .modal-overlay {
             position: fixed; inset: 0; background: rgba(255, 255, 255, 0.4);
             backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
@@ -215,19 +201,32 @@
         .modal-card {
             background: #FFF; width: 90%; max-width: 500px; padding: 30px; border-radius: 24px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.12); transform: scale(0.95); transition: transform 0.3s cubic-bezier(0.19, 1, 0.22, 1);
-            border: 1px solid rgba(0,0,0,0.05); text-align: center;
+            border: 1px solid rgba(0,0,0,0.05); text-align: center; position: relative;
         }
         .modal-overlay.open .modal-card { transform: scale(1); }
-        .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 5px; }
-        .modal-sub { font-size: 13px; color: #86868B; margin-bottom: 25px; }
-        .months-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .month-btn {
+        
+        .modal-header { display: flex; align-items: center; justify-content: center; margin-bottom: 5px; position: relative; }
+        .modal-back-btn { 
+            position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+            background: #F5F5F7; width: 32px; height: 32px; border-radius: 50%; display: flex;
+            justify-content: center; align-items: center; cursor: pointer; color: #1D1D1F;
+            transition: all 0.2s; font-size: 14px;
+        }
+        .modal-back-btn:hover { background: #E5E5EA; }
+        
+        .modal-title { font-size: 18px; font-weight: 700; }
+        .modal-sub { font-size: 13px; color: #86868B; margin-bottom: 25px; min-height: 16px; }
+        
+        .selection-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        
+        .selector-btn {
             padding: 15px 10px; background: #F5F5F7; border: 1px solid transparent; border-radius: 12px;
             font-size: 13px; font-weight: 600; color: #1D1D1F; cursor: pointer; transition: all 0.2s;
         }
-        .month-btn:hover:not(.disabled) { background: #E5E5EA; transform: translateY(-2px); }
-        .month-btn.active { background: var(--text-primary); color: #FFF; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        .month-btn.disabled { opacity: 0.3; cursor: not-allowed; background: #F9F9F9; color: #CCC; }
+        .selector-btn:hover:not(.disabled) { background: #E5E5EA; transform: translateY(-2px); }
+        .selector-btn.active { background: var(--text-primary); color: #FFF; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .selector-btn.disabled { opacity: 0.3; cursor: not-allowed; background: #F9F9F9; color: #CCC; }
+        
         .close-modal { margin-top: 25px; cursor: pointer; color: #86868B; font-size: 13px; font-weight: 500; }
         .close-modal:hover { color: var(--text-primary); }
 
@@ -246,7 +245,7 @@
             .sidebar-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 18; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
             .sidebar-backdrop.open { opacity: 1; pointer-events: all; }
             .menu-toggle-btn { display: block; }
-            .months-grid { grid-template-columns: repeat(2, 1fr); }
+            .selection-grid { grid-template-columns: repeat(2, 1fr); }
             .refresh-btn span { display: none; }
             .frame-container { padding: 10px; } 
             .frame-wrapper { border-radius: 16px; border: 1px solid rgba(0,0,0,0.03); box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
@@ -265,7 +264,7 @@
     <div id="login-overlay">
         <div class="login-card">
             <div class="login-logo">AGRICOLE</div>
-            <div class="login-sub">Acceso Analítico · 2025</div>
+            <div class="login-sub">Acceso Analítico · 2025-2030</div>
             <div class="input-group">
                 <label class="input-label">Usuario</label>
                 <div class="input-wrapper"><input type="text" id="userIn" class="login-input" placeholder="Username" autocomplete="off" autocapitalize="none"></div>
@@ -287,9 +286,16 @@
 
     <div class="modal-overlay" id="dateModal">
         <div class="modal-card">
-            <div class="modal-title">Selecciona el Periodo</div>
-            <div class="modal-sub">Año Fiscal 2025</div>
-            <div class="months-grid" id="monthsGrid"></div>
+            <div class="modal-header">
+                <div id="modalBackBtn" class="modal-back-btn" onclick="renderYearSelection()" style="display: none;">
+                    <i class="fas fa-chevron-left"></i>
+                </div>
+                <div class="modal-title" id="modalTitle">Selecciona el Año</div>
+            </div>
+            <div class="modal-sub" id="modalSub">Periodo Fiscal</div>
+            
+            <div class="selection-grid" id="selectionGrid"></div>
+            
             <div class="close-modal" onclick="closeDateModal()">Cancelar</div>
         </div>
     </div>
@@ -354,47 +360,63 @@
     </div>
 
     <script>
-        const DB_LINKS = {
-            "2025": {
-                "ENERO": { restaurante: null, pescadero: null, sanjose: null, kiosco: null },
-                "FEBRERO": { restaurante: null, pescadero: null, sanjose: null, kiosco: null },
-                "MARZO": { restaurante: null, pescadero: null, sanjose: null, kiosco: null },
-                "ABRIL": { restaurante: null, pescadero: null, sanjose: null, kiosco: null },
-                "MAYO": { restaurante: null, pescadero: null, sanjose: null, kiosco: null },
-                "JUNIO": { restaurante: null, pescadero: null, sanjose: null, kiosco: null },
-                "JULIO": { restaurante: null, pescadero: null, sanjose: null, kiosco: null },
-                "AGOSTO": { restaurante: null, pescadero: null, sanjose: null, kiosco: null },
-                "SEPTIEMBRE": { restaurante: null, pescadero: null, sanjose: null, kiosco: null },
-                "OCTUBRE": { restaurante: null, pescadero: null, sanjose: null, kiosco: null },
-                "NOVIEMBRE": { restaurante: null, pescadero: null, sanjose: null, kiosco: null },
-                "DICIEMBRE": {
-                    restaurante: 'https://script.google.com/macros/s/AKfycbzsuSbIyzYBxeymhMO0w4r_Mn9-Pm9gnTM7TxyriXMDum0xIuyekmlVwWrIoUWSOheB/exec',
-                    pescadero: 'https://script.google.com/macros/s/AKfycbzNjIdC7Qw-msddX0EmDo8i6A93pWa7ug3bNuXOWRFMNPJO32aMTZz3BDKej1C5Biou/exec',
-                    sanjose: 'https://script.google.com/macros/s/AKfycbx5x9O-pIRRC8_6G4YQ9V4Yf68xI4ypVCKikw-5KIMtIDEW-Cdd9kvnVUm2yEZENAkPtQ/exec',
-                    kiosco: 'https://script.google.com/macros/s/AKfycbzlCGofSejzlqK8_5X2rcgUNq0uhcFq2TxX3d94Ytk2yIFR44VXlyr-oafAR1FqSttEvA/exec'
-                }
-            }
+        // CONFIGURACIÓN DE ESTRUCTURA DE DATOS 2025-2030
+        const YEARS_LIST = ["2025", "2026", "2027", "2028", "2029", "2030"];
+        const MONTHS_LIST = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
+        const VIEWS_LIST = ["restaurante", "pescadero", "sanjose", "kiosco"];
+
+        // Generamos la estructura base automáticamente para todos los años
+        let DB_LINKS = {};
+        YEARS_LIST.forEach(y => {
+            DB_LINKS[y] = {};
+            MONTHS_LIST.forEach(m => {
+                DB_LINKS[y][m] = {};
+                VIEWS_LIST.forEach(v => {
+                    DB_LINKS[y][m][v] = null; // Inicialmente vacío
+                });
+            });
+        });
+
+        // -------------------------------------------------------------
+        // AQUÍ PEGAS TUS LINKS (Sobrescribimos los nulos)
+        // -------------------------------------------------------------
+        
+        // --- 2025 LINKS ---
+        DB_LINKS["2025"]["DICIEMBRE"] = {
+            restaurante: 'https://script.google.com/macros/s/AKfycbzsuSbIyzYBxeymhMO0w4r_Mn9-Pm9gnTM7TxyriXMDum0xIuyekmlVwWrIoUWSOheB/exec',
+            pescadero: 'https://script.google.com/macros/s/AKfycbzNjIdC7Qw-msddX0EmDo8i6A93pWa7ug3bNuXOWRFMNPJO32aMTZz3BDKej1C5Biou/exec',
+            sanjose: 'https://script.google.com/macros/s/AKfycbx5x9O-pIRRC8_6G4YQ9V4Yf68xI4ypVCKikw-5KIMtIDEW-Cdd9kvnVUm2yEZENAkPtQ/exec',
+            kiosco: 'https://script.google.com/macros/s/AKfycbzlCGofSejzlqK8_5X2rcgUNq0uhcFq2TxX3d94Ytk2yIFR44VXlyr-oafAR1FqSttEvA/exec'
         };
 
-        // INICIO: PESCADERO POR DEFECTO
+        // --- 2026 LINKS (Ejemplo futuro) ---
+        // DB_LINKS["2026"]["ENERO"]["pescadero"] = "TU_LINK_AQUI" ... MESES: "ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE";
+        
+            DB_LINKS["2026"]["ENERO"] = {
+            restaurante: 'https://script.google.com/macros/s/AKfycbxJoCarFEiNeK7-nwAaa4PNz6Oi4_twSqnyVyhYBDPE_UgR8hloUz2bVqsRk2o73V5rfQ/exec',
+            pescadero: 'https://script.google.com/macros/s/AKfycbzWv-KSp6JL99svT17-OOrsmoxkc7TOnPGLRTyBc8CB1iEudPVZQ2KptZ1XAgMD-ZR5Qg/exec',
+            sanjose: 'https://script.google.com/macros/s/AKfycbxMu2N6aZf3n1BuM_DR0_6hTD_2GH93ToXsQeAYNenb23O8VlrUBa6ZXuzpxEdSdOpE/exec',
+            kiosco: 'https://script.google.com/macros/s/AKfycbwF6v6T8AWuBmoyhr4CvfkBEyhKGfxe0vWOBI4dXrT_0qul-2ghgYeMJRO27UD5th3ncw/exec'
+        };
+
+
+        // -------------------------------------------------------------
+
+        // ESTADO INICIAL
         let STATE = {
             year: "2025",
             month: "DICIEMBRE", 
             view: "pescadero" 
         };
+        
+        let tempSelectedYear = null; // Para la navegación del modal
 
         const UNIT_NAMES = { restaurante: "Restaurante", pescadero: "Pescadero", sanjose: "San José", kiosco: "Kiosco" };
-
         const HASH_USER = "835d6dc88b708bc646d6db82c853ef4182fabbd4a8de59c213f2b5ab3ae7d9be";
         const HASH_PASS = "ab1a4e505565a12ce79107f113ad88b80319d0519f1e585f1656a604064aa9af";
 
-        // MEMORIA DE SESIÓN (Se borra si das F5)
-        let hintsShownSession = {
-            restaurante: false,
-            pescadero: false,
-            sanjose: false,
-            kiosco: false
-        };
+        // MEMORIA DE SESIÓN
+        let hintsShownSession = { restaurante: false, pescadero: false, sanjose: false, kiosco: false };
 
         async function sha256(message) {
             const msgBuffer = new TextEncoder().encode(message);
@@ -478,11 +500,17 @@
         }
 
         function loadIframe() {
-            const url = DB_LINKS[STATE.year][STATE.month][STATE.view];
+            // Manejo de seguridad si no existe el dato
+            let url = null;
+            try {
+                url = DB_LINKS[STATE.year][STATE.month][STATE.view];
+            } catch(e) {
+                console.log("Datos no encontrados para la fecha");
+            }
             
-            // Limpieza total del hint
+            // Limpieza del hint
             const hint = document.getElementById('incognitoHint');
-            hint.className = 'incognito-hint'; // reset classes (quitar dissolve/visible)
+            hint.className = 'incognito-hint'; 
             clearTimeout(hintTimer);
             clearTimeout(hideTimer);
 
@@ -490,34 +518,26 @@
                 loader.style.display = 'flex';
                 iframe.src = url;
                 
-                // LÓGICA: 1 VEZ POR SESIÓN
                 if (!hintsShownSession[STATE.view]) {
                     hintTimer = setTimeout(() => {
                         hint.classList.add('visible');
                         hintsShownSession[STATE.view] = true;
-                        
-                        // AUTO-DISOLVER EN 3 SEGUNDOS
-                        hideTimer = setTimeout(() => {
-                            dissolveHint();
-                        }, 3000); 
-
+                        hideTimer = setTimeout(() => { dissolveHint(); }, 3000); 
                     }, 2000);
                 }
 
-                iframe.onload = () => { 
-                    loader.style.display = 'none'; 
-                };
+                iframe.onload = () => { loader.style.display = 'none'; };
             } else {
+                loader.style.display = 'none';
                 iframe.src = "about:blank";
-                alert("No hay datos disponibles para esta selección.");
+                // Opcional: Mostrar mensaje en UI de que no hay datos
+                alert(`No hay datos disponibles para ${STATE.month} ${STATE.year} en ${UNIT_NAMES[STATE.view]}`);
             }
         }
 
-        // Nueva función para desvanecer con partículas lentas
         function dissolveHint() {
             const hint = document.getElementById('incognitoHint');
             hint.classList.add('dissolve');
-            // Eliminar visibilidad real después de la animación (1.5s)
             setTimeout(() => {
                 hint.classList.remove('visible');
                 hint.classList.remove('dissolve');
@@ -534,52 +554,89 @@
             document.getElementById('btnDateLabel').innerText = `${prettyMonth} ${STATE.year}`;
         }
 
-        function refreshFrame() {
-            loadIframe(); 
-        }
-
-        function logout() {
-            localStorage.removeItem('agricole_auth');
-            location.reload();
-        }
-
+        function refreshFrame() { loadIframe(); }
+        function logout() { localStorage.removeItem('agricole_auth'); location.reload(); }
+        
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('open');
             document.getElementById('backdrop').classList.toggle('open');
         }
 
+        // --- LÓGICA DEL MODAL DE FECHAS (2 PASOS) ---
+
         function openDateModal() {
             const modal = document.getElementById('dateModal');
-            const grid = document.getElementById('monthsGrid');
-            grid.innerHTML = ''; 
-
-            const months = Object.keys(DB_LINKS["2025"]);
-            
-            months.forEach(m => {
-                const btn = document.createElement('div');
-                btn.className = 'month-btn';
-                btn.innerText = m.substring(0, 3); 
-                
-                const hasLink = DB_LINKS["2025"][m][STATE.view];
-                
-                if (!hasLink) {
-                    btn.classList.add('disabled'); 
-                } else {
-                    btn.onclick = () => selectMonth(m);
-                }
-
-                if (m === STATE.month) btn.classList.add('active'); 
-                grid.appendChild(btn);
-            });
-
             modal.classList.add('open');
+            // Al abrir, siempre empezamos seleccionando el AÑO
+            renderYearSelection();
         }
 
         function closeDateModal() {
             document.getElementById('dateModal').classList.remove('open');
+            tempSelectedYear = null;
         }
 
-        function selectMonth(month) {
+        // PASO 1: Renderizar Años
+        function renderYearSelection() {
+            const grid = document.getElementById('selectionGrid');
+            const title = document.getElementById('modalTitle');
+            const sub = document.getElementById('modalSub');
+            const backBtn = document.getElementById('modalBackBtn');
+
+            grid.innerHTML = '';
+            title.innerText = "Selecciona el Año";
+            sub.innerText = "Periodo Fiscal";
+            backBtn.style.display = 'none'; // No hay atrás desde aquí
+
+            YEARS_LIST.forEach(year => {
+                const btn = document.createElement('div');
+                btn.className = 'selector-btn';
+                btn.innerText = year;
+                if(year === STATE.year) btn.classList.add('active');
+                
+                btn.onclick = () => {
+                    tempSelectedYear = year;
+                    renderMonthSelection(year);
+                };
+                grid.appendChild(btn);
+            });
+        }
+
+        // PASO 2: Renderizar Meses (del año seleccionado)
+        function renderMonthSelection(year) {
+            const grid = document.getElementById('selectionGrid');
+            const title = document.getElementById('modalTitle');
+            const sub = document.getElementById('modalSub');
+            const backBtn = document.getElementById('modalBackBtn');
+
+            grid.innerHTML = '';
+            title.innerText = "Selecciona el Mes";
+            sub.innerText = `Año Fiscal ${year}`;
+            backBtn.style.display = 'flex'; // Mostrar botón de atrás
+
+            MONTHS_LIST.forEach(month => {
+                const btn = document.createElement('div');
+                btn.className = 'selector-btn';
+                btn.innerText = month.substring(0, 3);
+                
+                // Verificamos si hay link para pintar activo/desactivado
+                const hasLink = DB_LINKS[year][month][STATE.view];
+                
+                if (!hasLink) {
+                    btn.classList.add('disabled');
+                } else {
+                    btn.onclick = () => confirmSelection(year, month);
+                }
+
+                // Marcar activo si es la selección actual (solo si coincide año y mes)
+                if (year === STATE.year && month === STATE.month) btn.classList.add('active');
+                
+                grid.appendChild(btn);
+            });
+        }
+
+        function confirmSelection(year, month) {
+            STATE.year = year;
             STATE.month = month;
             closeDateModal();
             updateUI();
